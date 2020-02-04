@@ -1,0 +1,53 @@
+Kick start procedure
+
+A network based kickstart can be initiated by an PXE boot capable network card.
+
+The PXE boot first requests an IP address from DHCP server and it also obtains he location of PXE boot file from the DHCP server.
+
+PXELINUX is a boot loader for linux using the PXE network booting protocol.
+
+The PXE bootfile is loaded from the TFTP server along with the contents of a file which defines the location and name of the installation kernel and initrd.img file.
+
+The PXE bootfile then loads the boot kernel abd initrd.img still using TFTP.After booting Anaconda is started.
+
+After choosing the desired kickstart installation,Anaconda locates the kickstart configuration file ks.cfg.
+
+Requirements
+
+A server:-Running a DHCP server,a TFTP server to provide boot files and an HTTP,FTP or NFS which hosts the installed images.
+
+A Client
+
+1.Configuring PXE boot for BIOS based systems.
+
+i) Install tftp package (yum install tftp-server)
+
+ii) Service required for tftp is xinetd(in /etc/xinetd.d/tftp conf file change the disable parameter from yes to no)
+
+iii)Allow incoming connection to tftp service in the firewall(firewall-cmd --add -service=tftp)
+
+iv)Configure your DHCP server.
+
+v)Now we need the pxelinux.0 file from the syslinux package in the ISO image file.
+
+vi)create a pxelinux/ directory within tftpboot/ and copy the pxelinux.0 file into it.(mkdir /var/lib/tftpboot/pxelinux;cp pxelinux.0 /var/lib/tftpboot/pxelinux/)
+
+vii)create a directory pxelinux.cfg/ in the pxelinux/ directory.(mkdir /var/lib/tftpboot/pxelinux/pxelinux.cfg).Add a configuration file named default to the pxelinux.cfg/ directory.
+
+viii)copy the boot images into your tftp/ root directory(cp /path/to/images/pxeboot/{vmlinuz,initrd.img} /var/lib/tftpboot/pxelinux/)
+
+ix)Finally start xinetd and DHCP services.
+
+
+DHCP server /tftp server/PXE server in our environment (Admin box)
+
+vd expand hostname | grep -i kickstart
+
+in admin box below files:-
+
+/etc/dhcpd.d/vdks.conf==>contains all the mac address who can contact to the DHCP server
+/etc/dhcp/dhcpd.conf===>configuration files
+/etc/dhcpd.d/network.conf===>Network details
+/var/log/dhcp==>contains the dhcp log message
+/tftpboot/oel6/pxelinux.0
+/tftpboot/oel6/pxelinux.cfg
